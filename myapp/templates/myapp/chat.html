@@ -1,0 +1,284 @@
+{% extends 'myapp/layout.html' %}
+{% load static %}
+
+{% block title %}Kai Kan - Викторина о японской кухне{% endblock %}
+
+{% block extra_css %}
+<style>
+    .quiz-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .quiz-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .quiz-header h1 {
+        color: #d32f2f;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .quiz-header p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .question {
+        margin-bottom: 25px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        border-left: 5px solid #d32f2f;
+    }
+
+    .question h3 {
+        margin-top: 0;
+        color: #333;
+    }
+
+    .options {
+        margin-top: 15px;
+    }
+
+    .option {
+        display: block;
+        margin: 10px 0;
+        padding: 10px 15px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .option:hover {
+        background-color: #f0f0f0;
+    }
+
+    .option.selected {
+        background-color: #ffcdd2;
+        border-color: #d32f2f;
+    }
+
+    .option.correct {
+        background-color: #c8e6c9;
+        border-color: #4caf50;
+    }
+
+    .option.incorrect {
+        background-color: #ffcdd2;
+        border-color: #d32f2f;
+    }
+
+    .submit-btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        background-color: #d32f2f;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-top: 20px;
+    }
+
+    .submit-btn:hover {
+        background-color: #b71c1c;
+    }
+
+    .result {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 1.2rem;
+        display: none;
+    }
+
+    .result h2 {
+        color: #d32f2f;
+    }
+
+    .japanese-decoration {
+        text-align: center;
+        margin: 20px 0;
+        font-size: 2rem;
+        color: #d32f2f;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="quiz-container">
+    <div class="quiz-header">
+        <h1>Викторина о японской кухне</h1>
+        <p>Проверьте свои знания о традиционных японских блюдах и ингредиентах</p>
+        <div class="japanese-decoration">日本料理クイズ</div>
+    </div>
+
+    <form id="japanese-cuisine-quiz">
+        <div class="question">
+            <h3>1. Что такое "васаби"?</h3>
+            <div class="options">
+                <label class="option"><input type="radio" name="q1" value="a"> Японский зеленый чай</label>
+                <label class="option"><input type="radio" name="q1" value="b"> Острый зеленый хрен</label>
+                <label class="option"><input type="radio" name="q1" value="c"> Вид морских водорослей</label>
+                <label class="option"><input type="radio" name="q1" value="d"> Соевый соус</label>
+            </div>
+        </div>
+
+        <div class="question">
+            <h3>2. Как называется японский омлет?</h3>
+            <div class="options">
+                <label class="option"><input type="radio" name="q2" value="a"> Тамагояки</label>
+                <label class="option"><input type="radio" name="q2" value="b"> Окономияки</label>
+                <label class="option"><input type="radio" name="q2" value="c"> Такояки</label>
+                <label class="option"><input type="radio" name="q2" value="d"> Окадзу</label>
+            </div>
+        </div>
+
+        <div class="question">
+            <h3>3. Что означает слово "суши" в переводе с японского?</h3>
+            <div class="options">
+                <label class="option"><input type="radio" name="q3" value="a"> Рыба с рисом</label>
+                <label class="option"><input type="radio" name="q3" value="b"> Кислый вкус</label>
+                <label class="option"><input type="radio" name="q3" value="c"> Сырая рыба</label>
+                <label class="option"><input type="radio" name="q3" value="d"> Морской деликатес</label>
+            </div>
+        </div>
+
+        <div class="question">
+            <h3>4. Как называется японская лапша из гречневой муки?</h3>
+            <div class="options">
+                <label class="option"><input type="radio" name="q4" value="a"> Удон</label>
+                <label class="option"><input type="radio" name="q4" value="b"> Рамен</label>
+                <label class="option"><input type="radio" name="q4" value="c"> Соба</label>
+                <label class="option"><input type="radio" name="q4" value="d"> Сомен</label>
+            </div>
+        </div>
+
+        <div class="question">
+            <h3>5. Что такое "даси"?</h3>
+            <div class="options">
+                <label class="option"><input type="radio" name="q5" value="a"> Основной японский бульон</label>
+                <label class="option"><input type="radio" name="q5" value="b"> Вид суши</label>
+                <label class="option"><input type="radio" name="q5" value="c"> Японский десерт</label>
+                <label class="option"><input type="radio" name="q5" value="d"> Маринованный имбирь</label>
+            </div>
+        </div>
+
+        <div class="question">
+            <h3>6. Как называется японский горячий горшок?</h3>
+            <div class="options">
+                <label class="option"><input type="radio" name="q6" value="a"> Сукияки</label>
+                <label class="option"><input type="radio" name="q6" value="b"> Набэмоно</label>
+                <label class="option"><input type="radio" name="q6" value="c"> Сябу-сябу</label>
+                <label class="option"><input type="radio" name="q6" value="d"> Все перечисленные</label>
+            </div>
+        </div>
+
+        <div class="question">
+            <h3>7. Что такое "бэнто"?</h3>
+            <div class="options">
+                <label class="option"><input type="radio" name="q7" value="a"> Японский обед в коробке</label>
+                <label class="option"><input type="radio" name="q7" value="b"> Вид супа</label>
+                <label class="option"><input type="radio" name="q7" value="c"> Сладкий рисовый десерт</label>
+                <label class="option"><input type="radio" name="q7" value="d"> Японский чайный сервиз</label>
+            </div>
+        </div>
+
+        <div class="question">
+            <h3>8. Какой из этих ингредиентов НЕ используется в традиционном мисо супе?</h3>
+            <div class="options">
+                <label class="option"><input type="radio" name="q8" value="a"> Тофу</label>
+                <label class="option"><input type="radio" name="q8" value="b"> Водоросли вакаме</label>
+                <label class="option"><input type="radio" name="q8" value="c"> Грибы шиитаке</label>
+                <label class="option"><input type="radio" name="q8" value="d"> Картофель</label>
+            </div>
+        </div>
+
+        <button type="button" class="submit-btn" onclick="checkAnswers()">Проверить ответы</button>
+    </form>
+
+    <div class="result" id="quiz-result">
+        <h2>Ваш результат: <span id="score">0</span> из 8</h2>
+        <p id="result-message"></p>
+        <div class="japanese-decoration">ありがとうございます!</div>
+    </div>
+</div>
+
+<script>
+    function checkAnswers() {
+        // Правильные ответы
+        const correctAnswers = {
+            q1: "b",
+            q2: "a",
+            q3: "b",
+            q4: "c",
+            q5: "a",
+            q6: "d",
+            q7: "a",
+            q8: "d"
+        };
+
+        let score = 0;
+
+        // Проверка ответов
+        for (let i = 1; i <= 8; i++) {
+            const questionName = "q" + i;
+            const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
+
+            if (selectedOption) {
+                const questionElement = selectedOption.closest('.question');
+                const allOptions = questionElement.querySelectorAll('.option');
+
+                // Сброс стилей
+                allOptions.forEach(opt => {
+                    opt.classList.remove('selected', 'correct', 'incorrect');
+                });
+
+                // Подсветка выбранного варианта
+                selectedOption.closest('.option').classList.add('selected');
+
+                if (selectedOption.value === correctAnswers[questionName]) {
+                    selectedOption.closest('.option').classList.add('correct');
+                    score++;
+                } else {
+                    selectedOption.closest('.option').classList.add('incorrect');
+
+                    // Подсветка правильного ответа
+                    const correctOption = questionElement.querySelector(`input[value="${correctAnswers[questionName]}"]`);
+                    correctOption.closest('.option').classList.add('correct');
+                }
+            }
+        }
+
+        // Показ результата
+        document.getElementById('score').textContent = score;
+        const resultMessage = document.getElementById('result-message');
+
+        if (score === 8) {
+            resultMessage.textContent = "Превосходно! Вы настоящий знаток японской кухни!";
+        } else if (score >= 5) {
+            resultMessage.textContent = "Хороший результат! Вы хорошо разбираетесь в японской кухне.";
+        } else if (score >= 3) {
+            resultMessage.textContent = "Неплохо, но есть куда расти! Попробуйте еще раз или посетите наш ресторан, чтобы узнать больше.";
+        } else {
+            resultMessage.textContent = "Пока не очень... Рекомендуем посетить наш ресторан и познакомиться с японской кухней ближе!";
+        }
+
+        document.getElementById('quiz-result').style.display = 'block';
+        window.scrollTo({
+            top: document.getElementById('quiz-result').offsetTop,
+            behavior: 'smooth'
+        });
+    }
+</script>
+{% endblock %}
