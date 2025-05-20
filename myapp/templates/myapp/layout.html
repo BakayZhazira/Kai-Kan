@@ -1,0 +1,303 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Kai Kan - Японский ресторан{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'myapp/css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'myapp/css/index.css' %}">
+    <script src="{% static 'myapp/js/layout.js' %}" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+    <style>
+    .chat-modal {
+        display: none;
+        flex-direction: column;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 400px;
+        max-height: 600px;
+        background: #fff;
+        border: 3px solid #c62828;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        z-index: 9999;
+    }
+
+    .chat-header {
+        background: #c62828;
+        color: #ffffff;
+        padding: 15px;
+        font-size: 18px;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chat-body {
+        flex-grow: 1;
+        padding: 15px;
+        overflow-y: auto;
+        background: #fff;
+    }
+
+    .chat-body div {
+        margin: 8px 0;
+        padding: 12px 18px;
+        border-radius: 20px;
+        max-width: 75%;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .chat-body div:nth-child(odd) {
+        background: #c62828;
+        color: white;
+        margin-right: auto;
+    }
+
+    .chat-body div:nth-child(even) {
+        background: #ffebee;
+        margin-left: auto;
+    }
+
+    .chat-footer {
+        display: flex;
+        padding: 12px;
+        background: #fff;
+        border-top: 2px solid #c62828;
+        gap: 10px;
+    }
+
+    .chat-footer input {
+        flex-grow: 1;
+        padding: 10px;
+        border: 2px solid #c62828;
+        border-radius: 25px;
+        outline: none;
+    }
+
+    .chat-footer button {
+        background: #c62828;
+        color: white;
+        border: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .chat-footer button:hover {
+        background: #8e1e1e;
+    }
+
+    .chat-button {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        background: #c62828;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        z-index: 9998;
+        transition: all 0.3s;
+    }
+
+    .chat-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    #voice-button.recording {
+        background-color: #8e1e1e;
+        animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+    </style>
+</head>
+<body class="dark-mode-supported">
+    <input type="checkbox" id="check">
+    <header>
+        <h2><a href="{% url 'index' %}" class="logo">kai-kan</a></h2>
+        <label for="check" class="menu-icon">&#9776;</label>
+        <nav class="navigation">
+            <label for="check" class="close-btn">&times;</label>
+            <a href="{% url 'about' %}">About us</a>
+            <a href="{% url 'news_home' %}">Menu</a>
+            <a href="{% url 'contact' %}">Interior</a>
+            <a href="{% url 'menu' %}">Our Chefs</a>
+        </nav>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <button class="theme-switcher" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="chat-button" id="open-chat">🗨</div>
+
+    <div class="chat-modal" id="chat-modal">
+        <div class="chat-header">
+            <span>Чат с поддержкой</span>
+            <span id="close-chat" style="cursor:pointer; font-size:24px;">&times;</span>
+        </div>
+
+        <div class="chat-body" id="chat-box"></div>
+
+        <div class="chat-footer">
+            <input type="text" id="message-input" placeholder="Введите сообщение...">
+            <button id="send-button">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+            </button>
+            <button id="voice-button" title="Голосовое сообщение">
+                <i class="fas fa-microphone"></i>
+            </button>
+        </div>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+    function manageDarkMode() {
+        const savedMode = localStorage.getItem('darkMode');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (savedMode === 'true' || (savedMode === null && systemPrefersDark)) {
+            document.body.classList.add('dark-mode');
+            updateThemeIcon(true);
+        }
+
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                const isDark = !document.body.classList.contains('dark-mode');
+                document.body.classList.toggle('dark-mode', isDark);
+                localStorage.setItem('darkMode', isDark);
+                updateThemeIcon(isDark);
+            });
+        }
+
+        function updateThemeIcon(isDark) {
+            const icon = document.querySelector('#themeToggle i');
+            if (icon) {
+                icon.classList.toggle('fa-moon', !isDark);
+                icon.classList.toggle('fa-sun', isDark);
+            }
+        }
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (!localStorage.getItem('darkMode')) {
+                document.body.classList.toggle('dark-mode', e.matches);
+                updateThemeIcon(e.matches);
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        manageDarkMode();
+
+        $.ajaxSetup({
+            headers: { "X-CSRFToken": '{{ csrf_token }}' }
+        });
+        $('#open-chat').click(function(){
+            $('#chat-modal').css('display', 'flex');
+        });
+
+        $('#close-chat').click(function(){
+            $('#chat-modal').hide();
+        });
+
+        $('#send-button').click(function(){
+            sendMessage();
+        });
+        $('#message-input').keypress(function(e){
+            if(e.which == 13){
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            var message = $('#message-input').val();
+            if (message.trim() === '') return;
+
+            $('#chat-box').append('<div> ' + message + '</div>');
+
+            $.ajax({
+                url: "/chat/",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ 'message': message }),
+                success: function(response){
+                    $('#chat-box').append('<div>' + response.response + '</div>');
+                    $('#message-input').val('');
+                    $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+                },
+                error: function(xhr, status, error) {
+                    $('#chat-box').append('<div><b>Ошибка:</b> не удалось отправить сообщение.</div>');
+                }
+            });
+        }
+        const voiceButton = document.getElementById('voice-button');
+        let recognition;
+
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.lang = 'ru-RU';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onstart = function() {
+                voiceButton.classList.add('recording');
+            };
+
+            recognition.onend = function() {
+                voiceButton.classList.remove('recording');
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                $('#message-input').val(transcript);
+                sendMessage();
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Ошибка распознавания речи: ', event.error);
+                voiceButton.classList.remove('recording');
+            };
+
+            voiceButton.addEventListener('click', function() {
+                recognition.start();
+            });
+        } else {
+            voiceButton.disabled = true;
+            voiceButton.title = "Ваш браузер не поддерживает голосовой ввод.";
+        }
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+{% extends 'myapp/layout.html' %}
+{% load static %}
+
+{% block title %}Kai Kan - Японский ресторан{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+        background: linear-gradient(
+                rgba(0, 0, 0, 0.3),
+            rgba(0, 0, 0, 0.5)
+        ),
+        url("{% static 'myapp/img/глав1.jpg' %}");
+
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-light);
+        text-align: center;
+        padding: 0 20px;
+    }
+
+    .hero-content {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .hero-info {
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 40px;
+        border-radius: 5px;
+        border-left: 5px solid var(--primary-color);
+    }
+
+    .hero-info h1 {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        line-height: 1.2;
+        font-weight: 300;
+        letter-spacing: 2px;
+    }
+
+    .hero-info .japanese-title {
+        display: block;
+        font-size: 1.8rem;
+        color: var(--accent-color);
+        margin-bottom: 15px;
+    }
+
+    .hero-info p {
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+        line-height: 1.6;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .chef-section {
+        background-color: var(--bg-light);
+        padding: 100px 20px;
+    }
+
+    body.dark-mode .chef-section {
+        background-color: var(--bg-dark);
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 60px;
+        position: relative;
+    }
+
+    .section-title:after {
+        content: "";
+        display: block;
+        width: 100px;
+        height: 3px;
+        background-color: var(--primary-color);
+        margin: 15px auto 0;
+    }
+
+    .chef-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 50px;
+    }
+
+    .chef-image {
+        flex: 1;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: 5px solid white;
+        outline: 1px solid #ddd;
+    }
+
+    .chef-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: transform 0.5s ease;
+    }
+
+    .chef-info {
+        flex: 1;
+        text-align: left;
+    }
+
+    .chef-info h3 {
+        font-size: 2rem;
+        color: var(--text-dark);
+        margin-bottom: 15px;
+        font-weight: 400;
+    }
+
+    body.dark-mode .chef-info h3 {
+        color: var(--text-light);
+    }
+
+    .chef-info .japanese-name {
+        display: block;
+        font-size: 1.3rem;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+    }
+
+    .chef-info p {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        margin-bottom: 20px;
+        color: var(--text-dark);
+    }
+
+    body.dark-mode .chef-info p {
+        color: var(--text-light);
+    }
+
+    .signature {
+        font-style: italic;
+        opacity: 0.8;
+        margin-top: 30px;
+        position: relative;
+        padding-left: 30px;
+        color: var(--text-dark);
+    }
+
+    body.dark-mode .signature {
+        color: var(--text-light);
+    }
+
+    .signature:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 20px;
+        height: 1px;
+        background-color: var(--primary-color);
+    }
+
+    @media (max-width: 768px) {
+        .hero-info h1 {
+            font-size: 2.5rem;
+        }
+
+        .hero-info .japanese-title {
+            font-size: 1.2rem;
+        }
+
+        .chef-container {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="hero-section">
+    <div class="hero-content">
+        <div class="hero-info">
+            <span class="japanese-title">開館</span>
+            <h1>KAI KAN</h1>
+            <p>
+                В Kai Kan мы приглашаем вас совершить путешествие по глубоким вкусам моря.
+                Вдохновленный японскими традициями и богатыми дарами океана,
+                наш ресторан предлагает свежий, современный взгляд на классические блюда из морепродуктов.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="chef-section">
+    <h2 class="section-title">Наш ресторан</h2>
+    <div class="chef-container">
+        <div class="chef-image">
+            <img src="{% static 'myapp/img/кайкан.jpg' %}" alt="Ресторан Kai-Kan">
+        </div>
+        <div class="chef-info">
+            <h3>Ресторан Kai-Kan <span class="japanese-name">海館</span></h3>
+            <p>
+                Kai-Kan — это уголок Японии в самом сердце города. Название ресторана переводится как «Дом моря»,
+                что отражает нашу любовь к свежим морским деликатесам и философии умиротворённости.
+            </p>
+            <p>
+                Мы вдохновляемся традициями японской кухни, от изысканных суши и сашими до редких региональных блюд,
+                которые подаются в современной интерпретации. В каждом ингредиенте — уважение к природе,
+                в каждом вкусе — история Японии.
+            </p>
+            <p>
+                Интерьер Kai-Kan оформлен в минималистичном японском стиле с элементами дерева, камня и света,
+                чтобы создать атмосферу уюта и гармонии. Здесь каждый гость может отвлечься от суеты
+                и погрузиться в гастрономическое путешествие.
+            </p>
+            <p class="signature">
+                "Kai-Kan — это больше, чем еда. Это эстетика, культура и душа Японии в каждой детали."
+            </p>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-logo">開館 KAI KAN</div>
+        <div class="copyright">© 2025 Kai Kan. Все права защищены.</div>
+    </div>
+</footer>
+
+{% endblock %}

@@ -1,0 +1,377 @@
+{% extends 'myapp/layout.html' %}
+{% load custom_filters %}
+
+{% block title %}Kai Kan - Меню{% endblock %}
+
+{% block content %}
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="Поиск блюд..." class="search-input">
+</div>
+
+<div class="menu-container">
+    {% with categories="Суши,Роллы,Сашими,Супы,Гарниры,Напитки"|split:"," %}
+        {% for category_name in categories %}
+            {% with category_items=menu|filter_category:category_name %}
+                {% if category_items %}
+                    <div class="category-section">
+                        <h2 class="category-title">{{ category_name }}</h2>
+                        <div class="menu-grid">
+                            {% for item in category_items %}
+                                <div class="dish-card">
+                                    {% if item.image %}
+                                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="dish-thumbnail">
+                                    {% endif %}
+                                    <div class="dish-info">
+                                        <h3 class="dish-title">{{ item.name }}</h3>
+                                        <div class="ingredients">
+                                            {{ item.description|truncatechars:20 }}
+                                        </div>
+                                        <div class="price-container">
+                                            <span class="price">{{ item.price }} тг</span>
+                                            <button class="detail-button"
+                                                    data-description="{{ item.description }}"
+                                                    data-image="{% if item.image %}{{ item.image.url }}{% else %}#{% endif %}">
+                                                More
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endwith %}
+        {% endfor %}
+    {% endwith %}
+</div>
+
+<div id="dishModal" class="modal">
+    <div class="modal-box">
+        <span class="close-modal">×</span>
+        <img id="modalDishImage" src="" alt="" class="modal-image">
+        <div class="modal-content">
+            <h2 id="modalDishTitle"></h2>
+            <p id="modalDishDescription" class="modal-text"></p>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --bg-color: #ffffff;
+        --text-color: #333333;
+        --card-bg: #ffffff;
+        --border-color: #868686;
+        --shadow-color: rgba(170, 50, 50, 0.1);
+        --title-color: #702929;
+        --price-color: #c33;
+        --button-bg: #c33;
+        --button-hover: #a22;
+        --modal-bg: white;
+        --category-bg: #f8f8f8;
+    }
+
+    .dark-mode {
+        --bg-color: #1a1a1a;
+        --text-color: #e0e0e0;
+        --card-bg: rgba(0, 0, 0, 0.89);
+        --border-color: #ffffff;
+        --shadow-color: rgba(0, 0, 0, 0.3);
+        --title-color: #ff7b7b;
+        --price-color: #ff5252;
+        --button-bg: #ff5252;
+        --button-hover: #e53935;
+        --modal-bg: rgba(0, 0, 0, 0.91);
+        --category-bg: #2a2a2a;
+    }
+
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .menu-title {
+        text-align: center;
+        margin: 30px 0;
+        color: var(--title-color);
+        font-size: 2.2em;
+    }
+
+    .search-container {
+        max-width: 500px;
+        margin: 20px auto 40px;
+        text-align: center;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 2px solid var(--border-color);
+        border-radius: 25px;
+        font-size: 1em;
+        outline: none;
+        background: var(--card-bg);
+        color: var(--text-color);
+        transition: border-color 0.3s;
+    }
+
+    .search-input:focus {
+        border-color: var(--price-color);
+    }
+
+    .menu-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px 40px;
+    }
+
+    .category-section {
+        margin-bottom: 50px;
+        background: var(--category-bg);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px var(--shadow-color);
+    }
+
+    .category-title {
+        color: var(--title-color);
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 10px;
+        margin-bottom: 25px;
+        font-size: 1.8em;
+        text-align: center;
+    }
+
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    .dish-card {
+        background: var(--card-bg);
+        box-shadow: 0 2px 8px var(--shadow-color);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: 1px solid var(--border-color);
+    }
+
+    .dish-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px var(--shadow-color);
+    }
+
+    .dish-thumbnail {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .dish-info {
+        padding: 15px;
+    }
+
+    .dish-title {
+        color: var(--title-color);
+        font-size: 1.2em;
+        margin: 0 0 10px 0;
+        min-height: 40px;
+    }
+
+    .ingredients {
+        color: var(--text-color);
+        font-size: 0.95em;
+        min-height: 40px;
+        margin-bottom: 15px;
+        opacity: 0.8;
+    }
+
+    .price-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+    }
+
+    .price {
+        color: var(--price-color);
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+
+    .detail-button {
+        background: var(--button-bg);
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: all 0.3s;
+    }
+
+    .detail-button:hover {
+        background: var(--button-hover);
+        transform: scale(0.98);
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 1000;
+    }
+
+    .modal-box {
+        position: relative;
+        background: var(--modal-bg);
+        margin: 5% auto;
+        width: 60%;
+        max-width: 600px;
+        border-radius: 10px;
+        animation: modalSlide 0.3s;
+        color: var(--text-color);
+        box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+    }
+
+    .modal-image {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .modal-content {
+        padding: 25px;
+    }
+
+    .close-modal {
+        position: absolute;
+        right: 20px;
+        top: 15px;
+        font-size: 30px;
+        color: #666;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+    .close-modal:hover {
+        color: var(--price-color);
+    }
+
+    .modal-text {
+        line-height: 1.6;
+        font-size: 1.1em;
+    }
+
+    @keyframes modalSlide {
+        from {transform: translateY(-20px); opacity: 0;}
+        to {transform: translateY(0); opacity: 1;}
+    }
+
+    @media (max-width: 1200px) {
+        .menu-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 900px) {
+        .menu-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .modal-box {
+            width: 80%;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .menu-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .modal-box {
+            width: 95%;
+            margin: 10% auto;
+        }
+
+        .category-title {
+            font-size: 1.5em;
+        }
+    }
+</style>
+
+<script>
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark-mode');
+    }
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+        if (event.matches) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+    });
+
+    document.querySelectorAll('.detail-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const modal = document.getElementById('dishModal');
+            document.getElementById('modalDishDescription').textContent = button.dataset.description;
+
+            if (button.dataset.image && button.dataset.image !== '#') {
+                document.getElementById('modalDishImage').src = button.dataset.image;
+                document.getElementById('modalDishImage').style.display = 'block';
+            } else {
+                document.getElementById('modalDishImage').style.display = 'none';
+            }
+
+            document.getElementById('modalDishTitle').textContent =
+                button.closest('.dish-card').querySelector('.dish-title').textContent;
+            modal.style.display = 'block';
+        });
+    });
+
+    document.querySelector('.close-modal').addEventListener('click', () => {
+        document.getElementById('dishModal').style.display = 'none';
+    });
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('dishModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const filter = this.value.toLowerCase();
+        const dishCards = document.querySelectorAll('.dish-card');
+        const categorySections = document.querySelectorAll('.category-section');
+
+        dishCards.forEach(card => {
+            const title = card.querySelector('.dish-title').textContent.toLowerCase();
+            if (title.includes(filter)) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        categorySections.forEach(section => {
+            const visibleCards = section.querySelectorAll('.dish-card:not([style*="display: none"])');
+            if (visibleCards.length === 0) {
+                section.style.display = 'none';
+            } else {
+                section.style.display = '';
+            }
+        });
+    });
+</script>
+{% endblock %}

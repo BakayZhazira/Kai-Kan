@@ -1,0 +1,128 @@
+{% extends "myapp/layout.html" %}
+{% load static %}
+{% block title %}Kai Kan - Японский ресторан{% endblock %}
+
+{% block extra_css %}
+<style>
+    .interior-section {
+        color: #fff;
+        overflow-x: hidden;
+    }
+
+    .fullwidth-banner {
+        position: relative;
+        height: 100vh;
+        max-height: 800px;
+        overflow: hidden;
+    }
+
+    .banner-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.7);
+    }
+
+    .fullwidth-content {
+        position: relative;
+        width: 100vw;
+        margin-left: -50vw;
+        left: 50%;
+        min-height: auto;
+        display: flex;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.9);
+        padding: 80px 0;
+    }
+
+    .content-wrapper {
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 40px;
+        align-items: center;
+    }
+
+   .interior-image {
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+    border-radius: 0;
+}
+
+    @media (max-width: 1200px) {
+        .content-wrapper {
+            gap: 30px;
+        }
+
+        .interior-image {
+            height: 350px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .fullwidth-banner {
+            height: 60vh;
+            max-height: 500px;
+        }
+
+        .content-wrapper {
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        .interior-image {
+            height: 300px;
+        }
+
+        .fullwidth-content {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .interior-image {
+            height: 250px;
+        }
+
+        .fullwidth-content {
+            padding: 40px 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="interior-section">
+    <div class="fullwidth-banner">
+        <img src="{% static 'myapp/img/img.png' %}" alt="Интерьер ресторана Kai-Kan" class="banner-image">
+    </div>
+
+    <div class="fullwidth-content">
+        <div class="content-wrapper">
+            <img src="{% static 'myapp/img/interior1.jpg' %}" alt="Интерьер ресторана" class="interior-image">
+            <img src="{% static 'myapp/img/interior2.jpg' %}" alt="Зал ресторана" class="interior-image">
+        </div>
+    </div>
+
+    <div class="fullwidth-content">
+        <div class="content-wrapper">
+            <img src="{% static 'myapp/img/interior3.jpg' %}" alt="Барная стойка" class="interior-image">
+            <img src="{% static 'myapp/img/interior6.jpg' %}" alt="VIP-зал" class="interior-image">
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-logo">開館 KAI KAN</div>
+        <div class="copyright">© 2025 Kai Kan. Все права защищены.</div>
+    </div>
+</footer>
+
+{% block extra_js %}
+{% endblock %}
+{% endblock %}
